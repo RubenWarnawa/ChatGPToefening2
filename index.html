@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jouw Bedrijfsnaam - Slimme Assistent</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Welkom bij Jouw Bedrijfsnaam</h1>
+        <p>Ontdek slimme oplossingen met onze virtuele assistent.</p>
+    </header>
+    
+    <main>
+        <div class="chat-container">
+            <div class="chat-box" id="chat-box">
+                <div class="messages" id="messages"></div>
+                <input type="text" id="user-input" placeholder="Typ je vraag hier...">
+                <button id="send-button">Verzenden</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Jouw Bedrijfsnaam. Alle rechten voorbehouden.</p>
+    </footer>
+
+    <script>
+        $(document).ready(function() {
+            $('#send-button').click(function() {
+                var userInput = $('#user-input').val();
+                $('#messages').append('<div class="user-message">' + userInput + '</div>');
+                $('#user-input').val('');
+
+                // Hier komt de API-call naar ChatGPT
+                $.post('https://api.openai.com/v1/chat/completions', {
+                    model: 'gpt-3.5-turbo',
+                    messages: [{'role': 'user', 'content': userInput}],
+                    max_tokens: 150
+                }, function(data) {
+                    var botReply = data.choices[0].message.content;
+                    $('#messages').append('<div class="bot-message">' + botReply + '</div>');
+                }, 'json').fail(function() {
+                    $('#messages').append('<div class="bot-message">Er is een fout opgetreden. Probeer het opnieuw.</div>');
+                });
+            });
+
+            $('#user-input').keypress(function(e) {
+                if (e.which == 13) { // Enter key pressed
+                    $('#send-button').click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
